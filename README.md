@@ -1,5 +1,5 @@
 # RoboJump Project
-Dieses Projekt ist zumindest der Anfang eines 3D-Platformers welches ich im besten Fall für den Infotag verwenden kann.
+This project is the start of a 3D-Platformer.
 
 ## Bugs, suggestions and issues with the project
 If you find any issues related to this project, don't be affraid to create an issue on GitHub to let me know.

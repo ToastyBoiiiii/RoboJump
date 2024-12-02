@@ -81,6 +81,8 @@ function insertIntoResourceObject(object, objectName, path, resourceListObject) 
     current[objectName] = object;
 }
 
+let totalAmountOfResourcesToLoad = 0;
+
 function loadResource(type, onCompletion, onLoad, onError) {
     var loadedResources = 0;
     resources[type.name] = {};
@@ -88,6 +90,7 @@ function loadResource(type, onCompletion, onLoad, onError) {
     fetchInfo.headers.path = type.foldername;
     fetch(fetchPath, fetchInfo).then(response => response.json()).then(folderContent => {
         const amountOfResourcesToLoad = countRecursiveLoadableFiles(folderContent, type.supportedCodecs);
+        totalAmountOfResourcesToLoad += amountOfResourcesToLoad
 
         recursiveFolderOperation(folderContent, (filepath) => {
             const path = filepath.split('/');
