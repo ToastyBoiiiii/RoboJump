@@ -1,14 +1,18 @@
-# Platformer Project
+# RoboJump Project
 Dieses Projekt ist zumindest der Anfang eines 3D-Platformers welches ich im besten Fall für den Infotag verwenden kann.
 
-## Running the Project
-Zum ausführen braucht man die folgenden Node Module:
-1. Vite
-2. Three
-3. Express
-4. Cors
+## Bugs, suggestions and issues with the project
+If you find any issues related to this project, don't be affraid to create an issue on GitHub to let me know.
 
-Danach muss man mit `node server.js` den Server und mit `npx vite` die Webseite hosten.
+## Running the Project
+To install the modules you need node.js. You can get it from the [Node.js Website](https://nodejs.org/en). Then you need to execute the `node install` command.
 
 ### CORS
-Derzeit habe ich noch CORS-Probleme was bedeutet das noch ein Browserplugin benötigt wird welches CORS vorübergehend deaktiviert.
+Currently there are still issues with CORS when trying to access the file server. This is why you need to install a browserplugin to circumvent this problem when running it.
+
+### Running the project locally
+To run it on your local machine, you need to first host the frontend with the command `npx vite` and for the backend you need to execute the command `node server.js`.
+
+### Building the project
+The project currently is not made for running it on a server. I still need to do some testing before I can provide an adequate tutorial on building it.
+The biggest problem right now is that the fetch from the ResourceManager to the server and the non functional cors-allow is hardcoded to the localhost with specific ports.
