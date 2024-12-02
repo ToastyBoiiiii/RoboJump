@@ -1,0 +1,134 @@
+import { TextureLoader } from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
+const textureLoader = new TextureLoader();
+
+const gltfLoader = new GLTFLoader();
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.7/');
+gltfLoader.setDRACOLoader(dracoLoader);
+
+function loadTexture(filepath, fileExtension, onLoad, onError) {
+    textureLoader.load(filepath, onLoad, onError);
+}
+
+function loadModel(filepath, fileExtension, onLoad, onError) {
+    gltfLoader.load(filepath, onLoad, onError);
+}
+
+const resources = {};
+
+const resourceTypes = [
+    {
+        'foldername': 'images',
+        'name': 'image',
+        'supportedCodecs': ['png', 'jpg', 'webp', 'bmp', 'jpeg', 'gif', 'dds'],
+        'fileloader': loadTexture
+    },
+    {
+        'foldername': 'models',
+        'name': 'model',
+        'supportedCodecs': ['glb', 'gltf'], // TODO: Add support for fbx, obj, stl
+        'fileloader': loadModel
+    }
+];
+
+const fetchPath = 'http://localhost:3000/resources';
+const fetchInfo = {method: 'POST', mode: 'cors', headers: {'Content-Type': 'application/json', 'path': 'path'}};
+
+function countRecursiveLoadableFiles(folderContent, supportedCodecs) {
+    let counter = 0;
+
+    for(const element of folderContent['files']) {
+        if(typeof element == 'string') {
+            const path = element.split('/');
+            const fullFileName = path[path.length-1];
+            const fileExtension = fullFileName.split('.')[1];
+            
+            if(supportedCodecs.includes(fileExtension)) {
+                counter++;
+            }
+        } else {
+            counter += countRecursiveLoadableFiles(element, supportedCodecs);
+        }
+    }
+
+    return counter;
+}
+
+function recursiveFolderOperation(files, operationPerFolder) {
+    for(const element of files['files']) {
+        if(typeof element == 'string') {
+            operationPerFolder(files['path'] + '/' + element);
+        } else {
+            recursiveFolderOperation(element, operationPerFolder);
+        }
+    }
+}
+
+function insertIntoResourceObject(object, objectName, path, resourceListObject) {
+    let current = resourceListObject;
+
+    for (let i = 0; i < path.length; i++) {
+        const key = path[i];
+        if (!current[key]) {
+            current[key] = {};
+        }
+        current = current[key];
+    }
+
+    current[objectName] = object;
+}
+
+function loadResource(type, onCompletion, onLoad, onError) {
+    var loadedResources = 0;
+    resources[type.name] = {};
+
+    fetchInfo.headers.path = type.foldername;
+    fetch(fetchPath, fetchInfo).then(response => response.json()).then(folderContent => {
+        const amountOfResourcesToLoad = countRecursiveLoadableFiles(folderContent, type.supportedCodecs);
+
+        recursiveFolderOperation(folderContent, (filepath) => {
+            const path = filepath.split('/');
+            const fullFileName = path[path.length-1];
+            const fileName = fullFileName.split('.')[0];
+            const fileExtension = fullFileName.split('.')[1];
+            path.shift();
+            path.shift();
+            path.pop();
+
+            if(!type.supportedCodecs.includes(fileExtension)) {
+                onError(`Unsupported ${type.name} format for file: ${filepath}`);
+                return;
+            }
+
+            type.fileloader('../' + filepath, fileExtension, (loadedResource) => {
+                insertIntoResourceObject(loadedResource, fileName, path, resources[type.name]);
+                onLoad(fileName);
+
+                loadedResources++;
+
+                if(loadedResources === amountOfResourcesToLoad) {
+                    onCompletion();
+                }
+            }, onError)
+        });
+    }).catch(error => onError(error));
+}
+
+function loadResources(onLoad, onProgress, onError) {
+    let completedResources = 0;
+
+    for(const resourceType of resourceTypes) {
+        loadResource(resourceType, () => {
+            completedResources++;
+
+            if(completedResources == resourceTypes.length) {
+                onLoad();
+            }
+        }, onProgress, onError);
+    }
+}
+
+export { resources, loadResources };
