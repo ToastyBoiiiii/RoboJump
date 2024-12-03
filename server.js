@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const app = express();
-const port = 3000; //? Check if cors is still present
+const port = 3000;
 
 const corsOptions = {
   origin: 'http://localhost:5173',

@@ -120,6 +120,19 @@ function loadResource(type, onCompletion, onLoad, onError) {
     }).catch(error => onError(error));
 }
 
+async function getAmountOfResources() {
+    let count = 0;
+
+    for(const resourceType of resourceTypes) {
+        fetchInfo.headers.path = resourceType.foldername;
+        await fetch(fetchPath, fetchInfo).then(response => response.json()).then(folderContent => {
+            count += countRecursiveLoadableFiles(folderContent, resourceType.supportedCodecs);
+        }).catch(console.error);
+    }
+
+    return count;
+}
+
 function loadResources(onLoad, onProgress, onError) {
     let completedResources = 0;
 
@@ -134,4 +147,4 @@ function loadResources(onLoad, onProgress, onError) {
     }
 }
 
-export { resources, loadResources };
+export { resources, loadResources, getAmountOfResources };

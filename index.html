@@ -11,9 +11,22 @@
         <script type="module" src="./js/main.js"></script>
         
         <div id="loading">
-            <progress id="progressBar"></progress>
-            <label for="progressBar">0%</label>
+            <p id="progress"></p>
+            <div>
+                <progress id="progressBar"></progress>
+                <label for="progressBar">0%</label>
+            </div>
         </div>
+
+        <div id="blocker">
+			<div id="instructions">
+				<h1>Click to play</h1>
+				<p>
+					Move: WASD<br/>
+					Look: MOUSE
+				</p>
+			</div>
+		</div>
 
         <div id="threejsContainer"></div>
     </body>
