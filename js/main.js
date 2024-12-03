@@ -84,18 +84,18 @@ async function initialize(onComplete) {
 }
 
 function initializeScene() {
-  robot = resources.model.npcs.character.scene;
+  robot = resources.model.characters.character.scene;
   robot.scale.set(0.5, 0.5, 0.5);
   scene.add(robot);
-  playerIdleAnimation = mixer.clipAction(resources.model.npcs.character.animations[1]);
-  playerWalkAnimation = mixer.clipAction(resources.model.npcs.character.animations[2]);
+  playerIdleAnimation = mixer.clipAction(resources.model.characters.character.animations[1]);
+  playerWalkAnimation = mixer.clipAction(resources.model.characters.character.animations[2]);
   playerWalkAnimation.setDuration(0.7)
   playerIdleAnimation.play();
   
-  parrot = resources.model.npcs.parrot.scene;
+  parrot = resources.model.characters.parrot.scene;
   parrot.scale.set(0.01, 0.01, 0.01);
   scene.add(parrot);
-  mixer.clipAction(resources.model.npcs.parrot.animations[0]).play();
+  mixer.clipAction(resources.model.characters.parrot.animations[0]).play();
   
 
   let grass = resources.model.environment['block-grass-overhang-low-large'].scene;
