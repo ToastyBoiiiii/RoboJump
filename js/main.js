@@ -7,9 +7,7 @@ import { loadResources, resources, getAmountOfResources } from './ResourceManage
 import { initializeProgressbar, updateLoadingScreen } from './LoadingScreen.mjs';
 import { isButtonPressed } from './InputHandler.mjs';
 
-const textureLoader = new THREE.TextureLoader();
-
-let renderer, scene, container, camera, clock, time, mixer, playerMixer, controls, playerWalkAnimation, playerIdleAnimation;
+let renderer, scene, container, camera, clock, time, mixer, controls, playerWalkAnimation, playerIdleAnimation;
 
 const moveSpeed = 2;
 let robot, parrot;
@@ -31,7 +29,6 @@ async function initialize(onComplete) {
 
   clock = new THREE.Clock();
   mixer = new THREE.AnimationMixer(scene);
-  playerMixer = new THREE.AnimationMixer(scene);
 
   // Initialize Variables
   time = 0;
@@ -113,6 +110,14 @@ function initializeScene() {
   }
 }
 
+// function bigBullshitFunc(vector, forwardVector) {
+//   vector.normalize();
+//   forwardVector.normalize();
+
+//   let axis = forwardVector.clone().cross(vector);
+//   let 
+// }
+
 // Animation
 function animate() { // TODO: Fix messy code by extracting it into own modules (main should only have to do the bare minimum)
   const delta = clock.getDelta();
@@ -125,8 +130,6 @@ function animate() { // TODO: Fix messy code by extracting it into own modules (
   parrot.position.z = Math.cos(time)*(2+Math.sin(time*0.8)+Math.sin(time*0.5)/10);
   parrot.position.y = Math.cos(time*4.5)*0.05+2;
   parrot.rotation.y = time + Math.PI/2;
-
-  camera.position.copy(robot.position.clone().add(new THREE.Vector3(0, 0.25, 0)).add(new THREE.Vector3(0, 0, -1).applyEuler(camera.rotation).negate().multiplyScalar(2)));
 
   let moveVector = new THREE.Vector3(0, 0, 0);
 
@@ -147,18 +150,28 @@ function animate() { // TODO: Fix messy code by extracting it into own modules (
   robot.position.add(moveVector.normalize().multiplyScalar(delta * moveSpeed));
   
   if(!moveVector.equals(new THREE.Vector3(0, 0, 0))) {
-    robot.lookAt(robot.position.clone().add(moveVector));
+    moveVector.normalize();
     
+    let angle = Math.asin(moveVector.z);
+
+    if(moveVector.x < 0) {
+      angle = Math.PI - angle;
+    }
+
+    robot.quaternion.rotateTowards(new THREE.Quaternion().setFromEuler(new THREE.Euler(0, -angle + Math.PI/2, 0)), 0.1);
+
     if(!playerWalkAnimation.isRunning()) {
-      playerIdleAnimation.stop();
       playerWalkAnimation.play();
+      playerIdleAnimation.stop();
     }
   } else {
     if(!playerIdleAnimation.isRunning()) {
-      playerWalkAnimation.stop();
       playerIdleAnimation.play();
+      playerWalkAnimation.stop();
     }
   }
+
+  camera.position.copy(robot.position.clone().add(new THREE.Vector3(0, 0.25, 0)).add(new THREE.Vector3(0, 0, -1).applyEuler(camera.rotation).negate().multiplyScalar(2)));
 
   renderer.render(scene, camera);
   requestAnimationFrame(animate);
