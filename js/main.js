@@ -110,14 +110,6 @@ function initializeScene() {
   }
 }
 
-// function bigBullshitFunc(vector, forwardVector) {
-//   vector.normalize();
-//   forwardVector.normalize();
-
-//   let axis = forwardVector.clone().cross(vector);
-//   let 
-// }
-
 // Animation
 function animate() { // TODO: Fix messy code by extracting it into own modules (main should only have to do the bare minimum)
   const delta = clock.getDelta();
