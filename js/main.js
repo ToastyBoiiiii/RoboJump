@@ -1,13 +1,14 @@
 import * as THREE from 'three';
-import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 import { RGBELoader } from 'three/addons/loaders/RGBELoader.js';
 import * as SkeletonUtils from 'three/addons/utils/SkeletonUtils.js';
 
+import { ThirdPersonControls } from './world/ThirdPersonControls.mjs';
 import { loadResources, resources, getAmountOfResources } from './ResourceManager.mjs';
 import { initializeProgressbar, updateLoadingScreen } from './LoadingScreen.mjs';
 import { isButtonPressed } from './InputHandler.mjs';
+import { Parrot } from './world/parrot.mjs';
 
-let renderer, scene, container, camera, clock, time, mixer, controls, playerWalkAnimation, playerIdleAnimation;
+let renderer, scene, container, camera, clock, mixer, controls, playerWalkAnimation, playerIdleAnimation;
 
 const moveSpeed = 2;
 let robot, parrot;
@@ -24,17 +25,15 @@ async function initialize(onComplete) {
   container = document.querySelector('#threejsContainer');
   container.appendChild(renderer.domElement);
 
-  camera = new THREE.PerspectiveCamera( 60, window.innerWidth/window.innerHeight,0.01, 50 );
-  camera.position.set(0, 1, 5);
+  camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.01, 50);
 
   clock = new THREE.Clock();
   mixer = new THREE.AnimationMixer(scene);
 
   // Initialize Variables
-  time = 0;
 
   // Mouse Control
-  controls = new PointerLockControls(camera, document.body);
+  controls = new ThirdPersonControls(camera, document.body);
   controls.maxPolarAngle = Math.PI-0.1;
   controls.minPolarAngle = 0.1;
 
@@ -89,12 +88,9 @@ function initializeScene() {
   playerWalkAnimation.setDuration(0.7)
   playerIdleAnimation.play();
   
-  parrot = resources.model.characters.parrot.scene;
-  parrot.scale.set(0.01, 0.01, 0.01);
+  parrot = new Parrot();
   scene.add(parrot);
-  mixer.clipAction(resources.model.characters.parrot.animations[0]).play();
   
-
   let grass = resources.model.environment['block-grass-overhang-low-large'].scene;
   grass.position.y = -1;
   grass.scale.set(2, 2, 2);
@@ -108,6 +104,11 @@ function initializeScene() {
     randomObject.rotation.y = Math.random()*Math.PI*2;
     scene.add(randomObject);
   }
+
+  // scene.add(new THREE.AmbientLight());
+  // scene.add(new THREE.DirectionalLight());
+
+  // controls.rotationalObject = robot;
 }
 
 // Animation
@@ -116,12 +117,8 @@ function animate() { // TODO: Fix messy code by extracting it into own modules (
   
   controls.update(delta);
   mixer.update(delta);
-  time += delta;
 
-  parrot.position.x = Math.sin(time)*(2+Math.cos(time*0.5)+Math.sin(time*0.2)/10);
-  parrot.position.z = Math.cos(time)*(2+Math.sin(time*0.8)+Math.sin(time*0.5)/10);
-  parrot.position.y = Math.cos(time*4.5)*0.05+2;
-  parrot.rotation.y = time + Math.PI/2;
+  parrot.update(delta);
 
   let moveVector = new THREE.Vector3(0, 0, 0);
 
@@ -162,8 +159,6 @@ function animate() { // TODO: Fix messy code by extracting it into own modules (
       playerWalkAnimation.stop();
     }
   }
-
-  camera.position.copy(robot.position.clone().add(new THREE.Vector3(0, 0.25, 0)).add(new THREE.Vector3(0, 0, -1).applyEuler(camera.rotation).negate().multiplyScalar(2)));
 
   renderer.render(scene, camera);
   requestAnimationFrame(animate);

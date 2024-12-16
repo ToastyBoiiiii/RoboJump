@@ -6,11 +6,11 @@ let pressedMouseButtons = 0;
 const mousePosition = new Vector2(0, 0);
 
 document.addEventListener('keyup', (event) => {
-    heldKeys = heldKeys.filter((element) => element !== event.key);
+    heldKeys = heldKeys.filter((element) => element !== event.key.toLowerCase());
 });
 
 document.addEventListener('keydown', (event) => {
-    if(!heldKeys.includes(event.key)) heldKeys.push(event.key);
+    if(!heldKeys.includes(event.key.toLowerCase())) heldKeys.push(event.key.toLowerCase());
 });
 
 document.addEventListener('mousemove', (event) => {
