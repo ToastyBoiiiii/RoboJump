@@ -21,16 +21,16 @@ const resources = {};
 
 const resourceTypes = [
     {
-        'foldername': 'images',
+        'folderName': 'images',
         'name': 'image',
         'supportedCodecs': ['png', 'jpg', 'webp', 'bmp', 'jpeg', 'gif', 'dds'],
-        'fileloader': loadTexture
+        'fileLoader': loadTexture
     },
     {
-        'foldername': 'models',
+        'folderName': 'models',
         'name': 'model',
         'supportedCodecs': ['glb', 'gltf'], // TODO: Add support for fbx, obj, stl
-        'fileloader': loadModel
+        'fileLoader': loadModel
     }
 ];
 
@@ -84,10 +84,10 @@ function insertIntoResourceObject(object, objectName, path, resourceListObject) 
 let totalAmountOfResourcesToLoad = 0;
 
 function loadResource(type, onCompletion, onLoad, onError) {
-    var loadedResources = 0;
+    let loadedResources = 0;
     resources[type.name] = {};
 
-    fetchInfo.headers.path = type.foldername;
+    fetchInfo.headers.path = type.folderName;
     fetch(fetchPath, fetchInfo).then(response => response.json()).then(folderContent => {
         const amountOfResourcesToLoad = countRecursiveLoadableFiles(folderContent, type.supportedCodecs);
         totalAmountOfResourcesToLoad += amountOfResourcesToLoad
@@ -106,7 +106,7 @@ function loadResource(type, onCompletion, onLoad, onError) {
                 return;
             }
 
-            type.fileloader('../' + filepath, fileExtension, (loadedResource) => {
+            type.fileLoader('../' + filepath, fileExtension, (loadedResource) => {
                 insertIntoResourceObject(loadedResource, fileName, path, resources[type.name]);
                 onLoad(fileName);
 
@@ -124,7 +124,7 @@ async function getAmountOfResources() {
     let count = 0;
 
     for(const resourceType of resourceTypes) {
-        fetchInfo.headers.path = resourceType.foldername;
+        fetchInfo.headers.path = resourceType.folderName;
         await fetch(fetchPath, fetchInfo).then(response => response.json()).then(folderContent => {
             count += countRecursiveLoadableFiles(folderContent, resourceType.supportedCodecs);
         }).catch(console.error);
@@ -140,7 +140,7 @@ function loadResources(onLoad, onProgress, onError) {
         loadResource(resourceType, () => {
             completedResources++;
 
-            if(completedResources == resourceTypes.length) {
+            if(completedResources === resourceTypes.length) {
                 onLoad();
             }
         }, onProgress, onError);

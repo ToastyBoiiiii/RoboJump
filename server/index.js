@@ -1,6 +1,7 @@
-const express = require('express');
-const cors = require('cors');
-const fs = require('fs');
+import express from 'express';
+import cors from 'cors';
+import {readdirSync, existsSync} from 'node:fs';
+
 const app = express();
 const port = 3000;
 
@@ -12,7 +13,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 function recursiveReadDirectory(path) {
-  let fileList = {"path": path, "files": fs.readdirSync(path)};
+  let fileList = {"path": path, "files": readdirSync(path)};
   
   for(let i = 0; i < fileList["files"].length; i++) {
     if(!fileList["files"][i].includes(".")) {
@@ -31,7 +32,7 @@ app.post('/resources', (req, res) => {
     return;
   }
 
-  if(!fs.existsSync(path)) {
+  if(!existsSync(path)) {
     res.sendStatus(400);
     return;
   }

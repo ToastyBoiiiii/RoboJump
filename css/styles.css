@@ -34,7 +34,7 @@ canvas {
 /** Loading screen */
 
 #loading {
-	z-index: 3;
+	z-index: 9;
 	background-color: black;
 	position: absolute;
 	width: 101vw;

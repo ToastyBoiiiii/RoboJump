@@ -1,0 +1,35 @@
+{
+  "inputs": [
+    {
+      "name": "Jump",
+      "options": [
+        {
+          "type": "keyboard",
+          "key": "Space"
+        }
+      ]
+    }
+  ],
+  "axis": [
+    {
+      "name": "Vertical",
+      "options": [
+        {
+          "type": "keyboard",
+          "positive": "KeyW",
+          "negative": "KeyS"
+        }
+      ]
+    },
+    {
+      "name": "Horizontal",
+      "options": [
+        {
+          "type": "keyboard",
+          "positive": "KeyA",
+          "negative": "KeyD"
+        }
+      ]
+    }
+  ]
+}

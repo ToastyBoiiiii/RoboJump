@@ -1,4 +1,4 @@
-import { Vector2 } from 'three';
+import {Vector2} from "three";
 
 let heldKeys = [];
 
@@ -6,11 +6,11 @@ let pressedMouseButtons = 0;
 const mousePosition = new Vector2(0, 0);
 
 document.addEventListener('keyup', (event) => {
-    heldKeys = heldKeys.filter((element) => element !== event.key.toLowerCase());
+    heldKeys = heldKeys.filter((element) => element !== event.code);
 });
 
 document.addEventListener('keydown', (event) => {
-    if(!heldKeys.includes(event.key.toLowerCase())) heldKeys.push(event.key.toLowerCase());
+    if(!heldKeys.includes(event.code)) heldKeys.push(event.code);
 });
 
 document.addEventListener('mousemove', (event) => {
@@ -43,4 +43,4 @@ function areMouseButtonsPressed(binaryButton) {
     return pressedMouseButtons === binaryButton
 }
 
-export { isButtonPressed, isMouseButtonPressed, areMouseButtonsPressed, mousePosition };
+export {isButtonPressed, isMouseButtonPressed, areMouseButtonsPressed, mousePosition};
